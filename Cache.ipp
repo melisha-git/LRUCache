@@ -1,46 +1,46 @@
 #include "Cache.hpp"
 
-template<typename Page, typename Id>
-Cache<Page, Id>::Cache(size_t cacheSize) : maxSizez_(cacheSize) {
+template<typename Page>
+Cache<Page>::Cache(size_t cacheSize) : maxSizez_(cacheSize) {
 
 }
 
-template<typename Page, typename Id>
-Page Cache<Page, Id>::getPage(Id id) {
+template<typename Page>
+Page Cache<Page>::getPage(size_t pageNumber) {
     Page currPage;
-    if (!cache_.count(id)) {
-        currPage = getSlowPage(id);
+    if (!cache_.count(pageNumber)) {
+        currPage = getSlowPage(pageNumber);
     }
     else {
-        auto it = cache_[id];
+        auto it = cache_[pageNumber];
         currPage = it->second;
         if (it != list_.end()) {
             list_.erase(it);
-            cache_.erase(id);
+            cache_.erase(pageNumber);
         }
     }
-    list_.push_front({id, currPage});
-    cache_[id] = list_.begin();
+    list_.push_front({pageNumber, currPage});
+    cache_[pageNumber] = list_.begin();
     while (list_.size() > maxSizez_) {
-        Id lastId = list_.back().first;
+        size_t lastPage = list_.back().first;
         list_.pop_back();
-        cache_.erase(lastId);
+        cache_.erase(lastPage);
     }
     return list_.front().second;
 }
 
-template<typename Page, typename Id>
-Page Cache<Page, Id>::getSlowPage(Id id) {
+template<typename Page>
+Page Cache<Page>::getSlowPage(size_t pageNumber) {
     std::cout << "Slow get page\n";
     std::this_thread::sleep_for(std::chrono::seconds(2));
-    Page ans = std::to_string(id);
+    Page ans = std::to_string(pageNumber);
     return ans;
 }
 
-template<typename Page, typename Id>
-void Cache<Page, Id>::printList() const {
-    for (const auto& id : list_) {
-        std::cout << id.first << "|";
+template<typename Page>
+void Cache<Page>::printList() const {
+    for (const auto& pageNumber : list_) {
+        std::cout << pageNumber.first << "|";
     }
     std::cout << std::endl;
 }
