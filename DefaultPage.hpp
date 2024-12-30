@@ -4,7 +4,7 @@
 
 class DefaultPage {
 public:
-    explicit DefaultPage(size_t pageNumber) : pageNumber_(pageNumber) {
+    explicit DefaultPage(size_t pageNumber, const std::string& content = "") : pageNumber_(pageNumber), content_(std::move(content)) {
 
     }
 
@@ -15,12 +15,16 @@ public:
         }
     }
 
-    std::string getContent() const {
+    virtual std::string getContent() const {
         return content_;
     }
 
+    virtual size_t getPageNumber() const {
+        return pageNumber_;
+    }
+
 private:
-    virtual void setDefaultContent() {
+    void setDefaultContent() {
         content_ = std::to_string(pageNumber_);
     }
     size_t pageNumber_;
