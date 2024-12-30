@@ -1,13 +1,17 @@
 #include "Cache.hpp"
 
-template<typename Page>
-Cache<Page>::Cache(size_t cacheSize) : maxSizez_(cacheSize) {
+#include <memory>
+#include <iostream>
+#include <thread>
+#include <chrono>
+#include <algorithm>
+
+Cache::Cache(size_t cacheSize) : maxSizez_(cacheSize) {
 
 }
 
-template<typename Page>
-Page Cache<Page>::getPage(size_t pageNumber) {
-    Page currPage;
+DefaultPage* Cache::getPage(size_t pageNumber) {
+    DefaultPage* currPage;
     if (!cache_.count(pageNumber)) {
         currPage = getSlowPage(pageNumber);
     }
@@ -29,16 +33,15 @@ Page Cache<Page>::getPage(size_t pageNumber) {
     return list_.front().second;
 }
 
-template<typename Page>
-Page Cache<Page>::getSlowPage(size_t pageNumber) {
+DefaultPage* Cache::getSlowPage(size_t pageNumber) {
     std::cout << "Slow get page\n";
     std::this_thread::sleep_for(std::chrono::seconds(2));
-    Page ans = std::to_string(pageNumber);
-    return ans;
+    std::shared_ptr<DefaultPage> page = std::make_shared<DefaultPage>(pageNumber);
+    page->setContent("");
+    return page.get();
 }
 
-template<typename Page>
-void Cache<Page>::printList() const {
+void Cache::printList() const {
     for (const auto& pageNumber : list_) {
         std::cout << pageNumber.first << "|";
     }
