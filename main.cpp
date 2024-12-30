@@ -1,7 +1,8 @@
 #include "Cache.hpp"
+#include "DefaultPage.hpp"
 
 int main() {
-    Cache c(5);
+    Cache<DefaultPage> c(5);
 
     c.getPage(1);
     c.printList();
